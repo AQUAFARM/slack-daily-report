@@ -1,0 +1,27 @@
+{
+  "name": "slack-daily-report",
+  "version": "1.0.0",
+  "description": "fetch slack history and format as html",
+  "main": "index.js",
+  "bin": {
+    "sdr": "dist/bin/command.js",
+    "slack-daily-report": "dist/bin/command.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "yshrsmz <the.phantom.bane@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^2.9.0",
+    "superagent": "^1.5.0"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.1.18",
+    "babel-preset-stage-1": "^6.1.18",
+    "del": "^2.1.0",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^6.1.1",
+    "gulp-concat": "^2.6.0"
+  }
+}
