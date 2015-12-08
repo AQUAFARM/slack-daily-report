@@ -33,17 +33,17 @@ class SlackDailyReport {
             oldest: this.from
         }).end(function(err, res) {
             // console.log(res.body);
-            console.log('<ul>');
-            res.body.messages.forEach((item) => {
+            console.log('<table>');
+            res.body.messages.reverse().forEach((item) => {
                 let time = item.ts.split('.')[0];
                 let date = new Date(+time * 1000);
-                console.log('<li>');
-                console.log(`<span>${item.user || item.username}</span>`);
-                console.log(`<p>${that.escapeText(item.text)}</p>`);
-                console.log(`<span>at ${date}</span>`);
-                console.log('</li>');
+                console.log('<tr><td>');
+                console.log(`<p><b>${that.escapeText(item.text)}</b></p>`);
+                console.log(`<p>${item.user || item.username}`);
+                console.log(`at ${date}</p>`);
+                console.log('</td></tr>');
             })
-            console.log('</ul>');
+            console.log('</table>');
         });
     }
 
@@ -60,9 +60,9 @@ class SlackDailyReport {
     }
 
     escapeText(text) {
-        return text.replace(/&/g, '&amp;')
+        return text/*.replace(/&/g, '&amp;')
            .replace(/"/g, '&quot;')
-           .replace(/'/g, "&apos;")
+           .replace(/'/g, "&apos;")*/
            .replace(/</g, '&lt;')
            .replace(/>/g, '&gt;');
     }
