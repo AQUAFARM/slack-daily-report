@@ -23,6 +23,8 @@ if (!_commander2.default.token && !_commander2.default.channel) {
     var sdr = new _slackDailyReport2.default({
         token: _commander2.default.token
     });
-    sdr.fetchHistory(_commander2.default.channel, _commander2.default.from || Math.floor(new Date(new Date().toJSON().slice(0, 10)).getTime() / 1000));
-    // sdr.fetchUsers();
+
+    var fromDate = _commander2.default.from || Math.floor(new Date(new Date().toJSON().slice(0, 10)).getTime() / 1000);
+    // sdr.fetchHistory(program.channel,  fromDate);
+    sdr.getHistory(_commander2.default.channel, fromDate);
 }

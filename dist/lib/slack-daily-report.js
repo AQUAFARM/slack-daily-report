@@ -10,6 +10,10 @@ var _superagent = require('superagent');
 
 var _superagent2 = _interopRequireDefault(_superagent);
 
+var _rx = require('rx');
+
+var _rx2 = _interopRequireDefault(_rx);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
@@ -18,6 +22,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var urlHistory = 'https://slack.com/api/channels.history';
 var urlUsers = 'https://slack.com/api/users.list';
+var urlChannels = 'https://slack.com/api/channels.list';
+
+_rx2.default.Observable.fromSuperagent = function (req) {
+    return _rx2.default.Observable.create(function (observable) {
+        req.end(function (err, res) {
+            if (err) {
+                observable.onError(err);
+            } else {
+                observable.onNext(res);
+            }
+            observable.onCompleted();
+        });
+    });
+};
 
 var SlackDailyReport = (function () {
     function SlackDailyReport(options) {
@@ -30,10 +48,61 @@ var SlackDailyReport = (function () {
         this.token = token;
         this.options = others;
 
+        this.users = [];
+        this.channels = [];
+
         // console.log('token:', this.token);
     }
 
     _createClass(SlackDailyReport, [{
+        key: 'getHistory',
+        value: function getHistory(channelName, from) {
+            var that = this;
+            var usersObservable = this.fetchUsers();
+            var channelsObservable = this.fetchChannels();
+
+            _rx2.default.Observable.zip(channelsObservable.flatMap(function (res) {
+                return _rx2.default.Observable.from(res.body.channels);
+            }).filter(function (channel) {
+                return channel.name == channelName;
+            }).first(), usersObservable.flatMap(function (res) {
+                return _rx2.default.Observable.just(res.body.members);
+            }), function (channel, members) {
+                return { channelId: channel.id, members: members };
+            }).flatMap(function (obj) {
+                that.users = obj.members;
+                return that.fetchHistory(obj.channelId, from);
+            }).flatMap(function (res) {
+                console.log('<table>');
+                return _rx2.default.Observable.from(res.body.messages.reverse());
+            }).map(function (item) {
+                var time = item.ts.split('.')[0];
+                var date = new Date(+time * 1000);
+                var username = undefined;
+                if (item.user) {
+                    var user = that.users.filter(function (user) {
+                        return user.id == item.user;
+                    })[0];
+                    if (user) {
+                        username = user.name;
+                    } else {
+                        username = item.user;
+                    }
+                }
+                console.log('<tr><td>');
+                console.log('<p><b>' + that.escapeText(item.text) + '</b></p>');
+                console.log('<p>' + (username || item.username));
+                console.log('at ' + date + '</p>');
+                console.log('</td></tr>');
+
+                return item;
+            }).subscribe(function (item) {}, function (err) {
+                console.log(err);
+            }, function () {
+                console.log('</table>');
+            });
+        }
+    }, {
         key: 'fetchHistory',
         value: function fetchHistory(channel, from) {
             this.channel = channel;
@@ -44,36 +113,47 @@ var SlackDailyReport = (function () {
             // console.log('channel:', this.channel);
             // console.log('from:', this.from);
 
-            _superagent2.default.get(urlHistory).query({
+            return _rx2.default.Observable.fromSuperagent(_superagent2.default.get(urlHistory).query({
                 token: this.token,
                 channel: this.channel,
                 oldest: this.from
-            }).end(function (err, res) {
-                // console.log(res.body);
-                console.log('<table>');
-                res.body.messages.reverse().forEach(function (item) {
-                    var time = item.ts.split('.')[0];
-                    var date = new Date(+time * 1000);
-                    console.log('<tr><td>');
-                    console.log('<p><b>' + that.escapeText(item.text) + '</b></p>');
-                    console.log('<p>' + (item.user || item.username));
-                    console.log('at ' + date + '</p>');
-                    console.log('</td></tr>');
-                });
-                console.log('</table>');
-            });
+            }));
+
+            // request.get(urlHistory)
+            // .query({
+            //     token: this.token,
+            //     channel: this.channel,
+            //     oldest: this.from
+            // }).end(function(err, res) {
+            //     // console.log(res.body);
+            //     console.log('<table>');
+            //     res.body.messages.reverse().forEach((item) => {
+            //         let time = item.ts.split('.')[0];
+            //         let date = new Date(+time * 1000);
+            //         console.log('<tr><td>');
+            //         console.log(`<p><b>${that.escapeText(item.text)}</b></p>`);
+            //         console.log(`<p>${item.user || item.username}`);
+            //         console.log(`at ${date}</p>`);
+            //         console.log('</td></tr>');
+            //     })
+            //     console.log('</table>');
+            // });
         }
     }, {
         key: 'fetchUsers',
         value: function fetchUsers() {
-            this.users = [];
-
-            _superagent2.default.get(urlUsers).query({
+            return _rx2.default.Observable.fromSuperagent(_superagent2.default.get(urlUsers).query({
                 token: this.token,
                 presence: 0
-            }).end(function (err, res) {
-                // console.log(res.body);
-            });
+            }));
+        }
+    }, {
+        key: 'fetchChannels',
+        value: function fetchChannels() {
+            return _rx2.default.Observable.fromSuperagent(_superagent2.default.get(urlChannels).query({
+                token: this.token,
+                exclude_archived: 1
+            }));
         }
     }, {
         key: 'escapeText',

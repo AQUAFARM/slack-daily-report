@@ -19,6 +19,8 @@ if (!program.token && !program.channel) {
     let sdr = new SlackDailyReport({
         token: program.token
     });
-    sdr.fetchHistory(program.channel, program.from || Math.floor((new Date((new Date()).toJSON().slice(0, 10))).getTime() / 1000));
-    // sdr.fetchUsers();
+
+    let fromDate = program.from || Math.floor((new Date((new Date()).toJSON().slice(0, 10))).getTime() / 1000);
+    // sdr.fetchHistory(program.channel,  fromDate);
+    sdr.getHistory(program.channel, fromDate);
 }
