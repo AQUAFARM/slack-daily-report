@@ -6,8 +6,8 @@ import program from 'commander';
 import SlackDailyReport from '../lib/slack-daily-report';
 
 program
-    .version('1.0.0')
-    .usage('test')
+    .version('1.0.1')
+    .usage('-t [token] -c [channel]')
     .option('-t, --token [token]', 'Slack Access Token')
     .option('-c, --channel [channel id]', 'Slack Channel ID to retrieve data')
     .option('-f, --from [from timestamp in seconds]', 'Timestamp in seconds from when to get history[defaults to today]')

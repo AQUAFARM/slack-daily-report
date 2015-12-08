@@ -91,8 +91,7 @@ var SlackDailyReport = (function () {
                 }
                 console.log('<tr><td>');
                 console.log('<p><b>' + that.escapeText(item.text) + '</b></p>');
-                console.log('<p>' + (username || item.username));
-                console.log('at ' + date + '</p>');
+                console.log('<p>' + (username || item.username) + ' at ' + date + '</p>');
                 console.log('</td></tr>');
 
                 return item;
@@ -118,26 +117,6 @@ var SlackDailyReport = (function () {
                 channel: this.channel,
                 oldest: this.from
             }));
-
-            // request.get(urlHistory)
-            // .query({
-            //     token: this.token,
-            //     channel: this.channel,
-            //     oldest: this.from
-            // }).end(function(err, res) {
-            //     // console.log(res.body);
-            //     console.log('<table>');
-            //     res.body.messages.reverse().forEach((item) => {
-            //         let time = item.ts.split('.')[0];
-            //         let date = new Date(+time * 1000);
-            //         console.log('<tr><td>');
-            //         console.log(`<p><b>${that.escapeText(item.text)}</b></p>`);
-            //         console.log(`<p>${item.user || item.username}`);
-            //         console.log(`at ${date}</p>`);
-            //         console.log('</td></tr>');
-            //     })
-            //     console.log('</table>');
-            // });
         }
     }, {
         key: 'fetchUsers',
