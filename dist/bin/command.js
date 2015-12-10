@@ -15,7 +15,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 * command.js
 */
 
-_commander2.default.version('1.0.1').usage('-t [token] -c [channel]').option('-t, --token [token]', 'Slack Access Token').option('-c, --channel [channel id]', 'Slack Channel ID to retrieve data').option('-f, --from [from timestamp in seconds]', 'Timestamp in seconds from when to get history[defaults to today]').parse(process.argv);
+_commander2.default.version('1.0.2').usage('-t [token] -c [channel]').option('-t, --token [token]', 'Slack Access Token').option('-c, --channel [channel id]', 'Slack Channel ID to retrieve data').option('-f, --from [from timestamp in seconds]', 'Timestamp in seconds from when to get history[defaults to today]').parse(process.argv);
 
 if (!_commander2.default.token && !_commander2.default.channel) {
     console.error('you need to pass --token and --channel');

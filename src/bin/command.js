@@ -6,7 +6,7 @@ import program from 'commander';
 import SlackDailyReport from '../lib/slack-daily-report';
 
 program
-    .version('1.0.1')
+    .version('1.0.2')
     .usage('-t [token] -c [channel]')
     .option('-t, --token [token]', 'Slack Access Token')
     .option('-c, --channel [channel id]', 'Slack Channel ID to retrieve data')
