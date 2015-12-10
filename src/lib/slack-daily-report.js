@@ -72,7 +72,7 @@ class SlackDailyReport {
                 }
                 console.log('<tr><td>');
                 console.log(`<p><b>${that.escapeText(item.text)}</b></p>`);
-                console.log(`<p>${username || item.username} at ${date}</p>`);
+                console.log(`<p>${username || item.username} at ${date.toLocaleString()}</p>`);
                 console.log('</td></tr>');
 
                 return item;
